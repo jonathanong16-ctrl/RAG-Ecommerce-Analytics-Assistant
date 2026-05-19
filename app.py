@@ -10,9 +10,7 @@ from modules.dashboard import (
 
 from modules.rag_engine import (
     generate_knowledge_chunks,
-    generate_rag_response,
-    retrieve_relevant_chunks,
-    generate_ai_rag_response
+    generate_vector_rag_response
 )
 
 st.set_page_config(page_title="RAG E-commerce Assistant", layout="wide")
@@ -118,6 +116,7 @@ elif page == "AI Assistant":
         - Which category generated the highest revenue?
         - What is the top-selling product?
         """)
+    st.caption("You can ask any question related to the uploaded sales dataset. The examples below are only suggested questions.")
 
     if st.button("Generate Response"):
 
@@ -125,15 +124,10 @@ elif page == "AI Assistant":
                 st.warning("Please enter a question.")
 
             else:
-                retrieved_chunks = retrieve_relevant_chunks(
-                question,
-                chunks
-             )
-
-                response = generate_ai_rag_response(
-                question,
-                retrieved_chunks
-             )
+                response, retrieved_chunks = generate_vector_rag_response(
+                    question,
+                    chunks
+                 )
 
                 st.success("AI Response Generated")
 

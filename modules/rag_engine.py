@@ -2,6 +2,9 @@ import os
 import google.generativeai as genai
 from dotenv import load_dotenv
 
+import chromadb
+from sentence_transformers import SentenceTransformer
+
 load_dotenv()
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
@@ -187,3 +190,59 @@ def generate_ai_rag_response(question, retrieved_chunks):
     except Exception as e:
         return f"Gemini API error: {e}"
 
+def build_vector_store(chunks):
+    embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+    client = chromadb.Client()
+
+    collection = client.get_or_create_collection(
+        name="sales_knowledge"
+    )
+
+    # Clear old data to avoid duplicate chunks
+    existing_items = collection.get()
+
+    if existing_items["ids"]:
+        collection.delete(ids=existing_items["ids"])
+
+    embeddings = embedding_model.encode(chunks).tolist()
+
+    ids = [f"chunk_{i}" for i in range(len(chunks))]
+
+    collection.add(
+        documents=chunks,
+        embeddings=embeddings,
+        ids=ids
+    )
+
+    return collection, embedding_model
+
+
+def retrieve_chunks_from_vector_store(question, collection, embedding_model, top_k=3):
+    query_embedding = embedding_model.encode([question]).tolist()[0]
+
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=top_k
+    )
+
+    retrieved_chunks = results["documents"][0]
+
+    return retrieved_chunks
+
+
+def generate_vector_rag_response(question, chunks):
+    collection, embedding_model = build_vector_store(chunks)
+
+    retrieved_chunks = retrieve_chunks_from_vector_store(
+        question,
+        collection,
+        embedding_model
+    )
+
+    response = generate_ai_rag_response(
+        question,
+        retrieved_chunks
+    )
+
+    return response, retrieved_chunks

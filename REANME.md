@@ -21,10 +21,6 @@ An AI-powered ecommerce analytics assistant using Retrieval-Augmented Generation
 - Pandas
 - Plotly
 
-## System Architecture
-
-(Add architecture diagram here)
-
 ## Workflow
 
 1. Upload ecommerce documents
