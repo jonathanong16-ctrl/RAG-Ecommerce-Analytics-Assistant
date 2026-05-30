@@ -1,13 +1,53 @@
 import pandas as pd
 
-REQUIRED_COLUMNS = ["order_date", "product_name", "category", "quantity", "unit_price"]
-
+REQUIRED_COLUMNS = [
+    "order_date",
+    "product_name",
+    "category",
+    "quantity",
+    "sales"
+]
 def validate_data(df):
     missing = [col for col in REQUIRED_COLUMNS if col not in df.columns]
     if missing:
         raise ValueError(f"Missing columns: {', '.join(missing)}")
 
+COLUMN_MAPPING = {
+    "order_date": "order_date",
+    "date": "order_date",
+
+    "product_name": "product_name",
+    "product": "product_name",
+
+    "category": "category",
+
+    "quantity": "quantity",
+    "qty": "quantity",
+
+    "sales": "sales",
+    "revenue": "sales",
+    "amount": "sales",
+
+    "profit": "profit",
+
+    "region": "region"
+}
+
 def clean_data(df):
+
+    df.columns = [
+    col.lower().strip().replace(" ", "_")
+    for col in df.columns
+    ]
+
+    df = df.rename(
+        columns={
+            col: COLUMN_MAPPING[col]
+            for col in df.columns
+            if col in COLUMN_MAPPING
+        }
+    )
+    
     validate_data(df)
 
     df = df.dropna()
@@ -15,9 +55,9 @@ def clean_data(df):
 
     df["order_date"] = pd.to_datetime(df["order_date"])
     df["quantity"] = pd.to_numeric(df["quantity"])
-    df["unit_price"] = pd.to_numeric(df["unit_price"])
+    df["sales"] = pd.to_numeric(df["sales"])
 
-    df["revenue"] = df["quantity"] * df["unit_price"]
+    df["revenue"] = df["sales"]
 
     return df
 

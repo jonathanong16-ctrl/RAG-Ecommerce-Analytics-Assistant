@@ -31,8 +31,10 @@ if page == "Upload Data":
 
     uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
 
-    st.info("Required columns: order_date, product_name, category, quantity, unit_price")
-
+    st.info(
+    "Required columns: order_date, product_name, category, quantity, sales"
+    )
+    
     if uploaded_file is not None:
         try:
             df = pd.read_csv(uploaded_file)
