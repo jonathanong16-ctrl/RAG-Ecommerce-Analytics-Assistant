@@ -15,7 +15,7 @@ from modules.rag_engine import (
 
 st.set_page_config(page_title="RAG E-commerce Assistant", layout="wide")
 
-st.title("RAG-based E-commerce Sales Analysis Assistant")
+st.title("📊 RAG-based E-commerce Sales Analysis Assistant")
 
 st.sidebar.title("Navigation")
 page = st.sidebar.radio(
@@ -27,7 +27,7 @@ if "df" not in st.session_state:
     st.session_state.df = None
 
 if page == "Upload Data":
-    st.header("Upload E-commerce Dataset")
+    st.header("📁 Upload E-commerce Dataset")
 
     uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
 
@@ -45,15 +45,8 @@ if page == "Upload Data":
         except Exception as e:
             st.error(f"Error: {e}")
 
-    if st.button("Load Sample Data"):
-        df = pd.read_csv("data/sample_sales.csv")
-        df = clean_data(df)
-        st.session_state.df = df
-        st.success("Sample dataset loaded successfully!")
-        st.dataframe(df)
-
 elif page == "Dashboard":
-    st.header("Sales Dashboard")
+    st.header("📈 Sales Dashboard")
 
     if st.session_state.df is None:
         st.warning("Please upload or load a dataset first.")
@@ -88,7 +81,7 @@ elif page == "Dashboard":
 
 elif page == "AI Assistant":
 
-    st.header("AI Sales Assistant")
+    st.header("🧠 AI Sales Assistant")
 
     if st.session_state.df is None:
         st.warning("Please upload or load a dataset first.")
@@ -124,19 +117,23 @@ elif page == "AI Assistant":
 
             if question.strip() == "":
                 st.warning("Please enter a question.")
-
             else:
-                response, retrieved_chunks = generate_vector_rag_response(
-                    question,
-                    chunks
-                 )
+                try:
+                    with st.spinner("Generating AI insights..."):
+                        response, retrieved_chunks = generate_vector_rag_response(
+                            question,
+                            chunks
+                        )
 
-                st.success("AI Response Generated")
+                    st.success("AI response generated successfully!")
 
-                st.markdown("### Response")
-                st.write(response)
+                    st.markdown("### Response")
+                    st.write(response)
 
-                st.markdown("### Retrieved Context")
-                for i, chunk in enumerate(retrieved_chunks, start=1):
-                  st.info(f"{i}. {chunk}")
+                    st.markdown("### Retrieved Context")
+                    for i, chunk in enumerate(retrieved_chunks, start=1):
+                        st.info(f"{i}. {chunk}")
 
+                except Exception as e:
+                    st.error("Unable to generate AI response. Please try again.")
+                    st.caption(f"Technical details: {e}")  

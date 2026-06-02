@@ -112,6 +112,69 @@ def generate_knowledge_chunks(df):
         f"Business Recommendation: The seller should focus on promoting strong-performing products such as "
         f"{product_sales.index[0]} and improving weaker categories such as {category_sales.index[-1]}."
     )
+     # 7. Regional analysis
+    if "region" in df.columns:
+
+        region_sales = (
+            df.groupby("region")["revenue"]
+            .sum()
+            .sort_values(ascending=False)
+        )
+
+        chunks.append(
+            f"Regional Analysis: The highest performing region is "
+            f"{region_sales.index[0]} with SGD "
+            f"{region_sales.iloc[0]:,.2f} revenue."
+        )
+
+        chunks.append(
+            f"Regional Improvement Area: The weakest performing region is "
+            f"{region_sales.index[-1]} with SGD "
+            f"{region_sales.iloc[-1]:,.2f} revenue."
+        )
+
+    # 8. Profit analysis
+    if "profit" in df.columns:
+
+        category_profit = (
+            df.groupby("category")["profit"]
+            .sum()
+            .sort_values(ascending=False)
+        )
+
+        chunks.append(
+            f"Profit Analysis: The category with the highest profit is "
+            f"{category_profit.index[0]} with SGD "
+            f"{category_profit.iloc[0]:,.2f} profit."
+        )
+
+    # 9. Monthly sales trend
+    monthly_sales = (
+        df.groupby(
+            df["order_date"].dt.to_period("M")
+        )["revenue"]
+        .sum()
+    )
+
+    best_month = monthly_sales.idxmax()
+    best_month_sales = monthly_sales.max()
+
+    chunks.append(
+        f"Sales Trend Analysis: The highest monthly sales were "
+        f"recorded in {best_month} with SGD "
+        f"{best_month_sales:,.2f} revenue."
+    )
+
+    # 10. Weak product analysis
+    weak_product = (
+        product_sales.sort_values(by="total_revenue")
+    )
+
+    chunks.append(
+        f"Weak Product Analysis: The weakest product based on revenue "
+        f"is {weak_product.index[0]} with SGD "
+        f"{weak_product.iloc[0]['total_revenue']:,.2f} revenue."
+    )   
 
     return chunks
 
