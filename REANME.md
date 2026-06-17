@@ -16,8 +16,8 @@ An AI-powered ecommerce analytics assistant using Retrieval-Augmented Generation
 
 - Python
 - Streamlit
-- Gemini API / OpenAI API
-- FAISS / ChromaDB
+- Gemini API 
+- ChromaDB
 - Pandas
 - Plotly
 

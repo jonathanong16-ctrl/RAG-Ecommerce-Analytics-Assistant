@@ -65,19 +65,21 @@ elif page == "Dashboard":
         col_left, col_right = st.columns(2)
 
         with col_left:
+            st.subheader("📈 Monthly Sales Trend")
             monthly_chart = create_monthly_sales_chart(df)
             st.plotly_chart(monthly_chart, use_container_width=True)
 
         with col_right:
+            st.subheader("📊 Revenue by Category")
             category_chart = create_category_revenue_chart(df)
             st.plotly_chart(category_chart, use_container_width=True)
 
-        st.subheader("Top Products")
+        st.subheader("🏆 Top Performing Products")
         top_products = get_top_products_table(df)
         st.dataframe(top_products, use_container_width=True)
 
-        st.subheader("Processed Dataset")
-        st.dataframe(df, use_container_width=True)
+        with st.expander("View Processed Dataset"):
+             st.dataframe(df, use_container_width=True)
 
 elif page == "AI Assistant":
 
